@@ -1,11 +1,15 @@
 import os.path
+from turtle import mode
 
 from django.db import models
 
 # Create your models here.
 class Post(models.Model):
     title = models.CharField(max_length=30)
+
     content = models.TextField()
+
+    hook_mgs = models.TextField(blank=True)
 
     head_image = models.ImageField(upload_to='blog/images/%Y/%m/%d/', blank=True)
     attached_file = models.FileField(upload_to='blog/files/%Y/%m/%d/', blank=True)
