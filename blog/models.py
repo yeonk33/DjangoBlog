@@ -13,6 +13,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = 'Categories'
+
 # Create your models here.
 class Post(models.Model):
     title = models.CharField(max_length=30)
@@ -28,6 +31,8 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL)
+
 
     def __str__(self):
         return f'[{self.pk}] {self.title} :: {self.author}'
