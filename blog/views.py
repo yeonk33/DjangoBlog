@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import render, redirect
 from .models import Post, Category, Tag
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 
 # Create your views here.
@@ -25,6 +27,34 @@ from django.views.generic import ListView, DetailView
 #             'post' : post,
 #         }
 #     )
+
+class PostUpdate(LoginRequiredMixin, UpdateView):
+    model = Post
+    fields = ['title', 'hook_mgs', 'content', 'head_image', 'attached_file', 'category']
+
+    template_name = "blog/post_form_update.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        current_user = request.user
+        if current_user.is_authenticated and request.user == self.get_object().author:
+            return super(PostUpdate, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Post
+    fields = ['title', 'hook_mgs', 'content', 'head_image', 'attached_file', 'category']
+
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.is_staff
+
+    def form_valid(self, form):
+        current_user = self.request.user
+        if current_user.is_authenticated and (current_user.is_superuser or current_user.is_staff):
+            form.instance.author = current_user
+            return super(PostCreate, self).form_valid(form)
+        else:
+            return redirect('blog/')
 
 
 class PostList(ListView):
@@ -78,3 +108,5 @@ def show_tag_posts(request, slug):
         'post_list': post_list
     }
     return render(request, 'blog/post_list.html', context)
+
+
