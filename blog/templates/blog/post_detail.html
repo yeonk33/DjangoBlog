@@ -40,7 +40,7 @@
 
 
         <!-- Post Content -->
-        <p>{{ post.content }}</p>
+        <p>{{ post.get_content_markdown | safe }}</p>
 
       {% if post.attached_file %}
           <a href="{{ post.attached_file.url }}" type="button" class="btn btn-dark" download>첨부 파일 다운로드</a>
