@@ -2,8 +2,12 @@
 
 {% block title %}
     <title>대문페이지</title>
+
 {% endblock %}
 
 {% block main_area %}
     <h1>여기는 대문임</h1>
+    {% for post in recent_post %}
+        <p>{{ post.title }} - {{ post.content | truncatewords:10 }}</p>
+    {% endfor %}
 {% endblock %}
